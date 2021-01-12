@@ -14,25 +14,39 @@ from django.urls import reverse
 
 from .models import Choice
 
+from django.views import generic
+
 # Create your views here.
 # def index(request):
 # 	return HttpResponse("Hello, world. You're at the wandapp index.")
 
 
-def index(request):
-	latest_question_list = Question.objects.order_by('-pub_date')[:5]
-	context = {
-		'latest_question_list': latest_question_list,
-	}
-	return render(request, 'wandapp/index.html', context)
+class IndexView(generic.ListView):
+	template_name = 'wandapp/index.html'
+	context_object_name = 'latest_question_list'
 
-def detail(request, question_id):
-	question = get_object_or_404(Question, pk=question_id)	
-	return render(request, 'wandapp/detail.html', {'question': question})
+	def get_queryset(self):
+		"""Return the last five published questions."""
+		return Question.objects.order_by('-pub_date')[:5]
 
-def results(request, question_id):
-	question = get_object_or_404(Question, pk=question_id)
-	return render(request, 'wandapp/results.html', {'question': question})
+	# latest_question_list = Question.objects.order_by('-pub_date')[:5]
+	# context = { 'latest_question_list': latest_question_list, }
+	# return render(request, 'wandapp/index.html', context)
+
+class DetailView(generic.DetailView):
+	model = Question
+	template_name = 'wandapp/detail.html'
+
+	# question = get_object_or_404(Question, pk=question_id)	
+	# return render(request, 'wandapp/detail.html', {'question': question})
+
+class ResultsView(generic.DetailView):
+	model = Question
+	template_name = 'wandapp/results.html'
+
+	# question = get_object_or_404(Question, pk=question_id)
+	# return render(request, 'wandapp/results.html', {'question': question})
+	
 	# response = "You're looking at the results of question %s."
 	# return HttpResponse(response % question_id)
 
