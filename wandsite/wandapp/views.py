@@ -16,6 +16,8 @@ from .models import Choice
 
 from django.views import generic
 
+from django.utils import timezone
+
 # Create your views here.
 # def index(request):
 # 	return HttpResponse("Hello, world. You're at the wandapp index.")
@@ -26,8 +28,10 @@ class IndexView(generic.ListView):
 	context_object_name = 'latest_question_list'
 
 	def get_queryset(self):
-		"""Return the last five published questions."""
-		return Question.objects.order_by('-pub_date')[:5]
+		"""Return the last five published questions
+		(not including those set to be published in the future).
+		"""
+		return Question.objects.filter(pub_date__lte=timezone.now()).order_by('-pub_date')[:5]
 
 	# latest_question_list = Question.objects.order_by('-pub_date')[:5]
 	# context = { 'latest_question_list': latest_question_list, }
@@ -36,6 +40,14 @@ class IndexView(generic.ListView):
 class DetailView(generic.DetailView):
 	model = Question
 	template_name = 'wandapp/detail.html'
+
+	def get_queryset(self):
+		"""
+		Excludes any questions that aren't published yet.
+		게시될 예정인 설문은 페이지에서 나오지 않게 한다.
+		"""
+		return Question.objects.filter(pub_date__lte=timezone.now())
+	
 
 	# question = get_object_or_404(Question, pk=question_id)	
 	# return render(request, 'wandapp/detail.html', {'question': question})
