@@ -11,7 +11,7 @@ Detailed documentation is in the "docs" directory.
 Quick start
 -----------
 
-1. Add "wandapp" to your INSTALLED_APPS setting like this::
+1. Add "wandapp" to your INSTALLED_APPS setting.py like this::
 
 	INSTALLED_APPS = [
 		...
